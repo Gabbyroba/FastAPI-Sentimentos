@@ -52,21 +52,40 @@ async def definir_home():
 @app.post("/analisar-sentimento")
 async def analisar_sentimento(data: dict):
     # Receba o sentimento do usuário
-    sentimento = data.get("sentimento", "").lower()
+    sentimentos = data.get("sentimento", "").split(', ')
 
     # Defina o endpoint da API do Spotify para buscar músicas
     search_url = 'https://api.spotify.com/v1/search'
     
-    # Especifique os parâmetros da pesquisa, como o sentimento ou o gênero da música
-    params = {
-        'q': sentimento,
-        'type': 'track',
-        'limit': 1  # Limite de resultados
-    }
+    musicas_sugeridas = []
 
-    headers = {
-        'Authorization': f'Bearer {access_token}'
-    }
+    for sentimento in sentimentos:
+        # Especifique os parâmetros da pesquisa, como o sentimento ou o gênero da música
+        params = {
+            'q': sentimento,
+            'type': 'track',
+            'limit': 1  # Limite de resultados
+        }
+
+        headers = {
+            'Authorization': f'Bearer {access_token}'
+        }
+
+        # Faça a solicitação à API do Spotify
+        response = requests.get(search_url, params=params, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            # Extraia os detalhes da música a partir da resposta
+            # Por exemplo, data['tracks']['items'][0]['name'] contém o nome da música
+            if data['tracks']['items']:
+                musica_sugerida = data['tracks']['items'][0]['name']
+                musicas_sugeridas.append(musica_sugerida)
+
+    if musicas_sugeridas:
+        return {"sentimentos": sentimentos, "musicas_sugeridas": musicas_sugeridas}
+    else:
+        return {"erro": "Não foi possível encontrar músicas para os sentimentos especificados"}
 
     # Faça a solicitação à API do Spotify
     response = requests.get(search_url, params=params, headers=headers)
