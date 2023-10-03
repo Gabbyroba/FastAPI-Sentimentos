@@ -47,7 +47,7 @@ else:
 
 @app.get("/")
 async def definir_home():
-    return('Boas vindas à API feeling you!')
+    return('Boas vindas à API feeling you!')    
 
 @app.post("/analisar-sentimento")
 async def analisar_sentimento(data: dict):
@@ -55,29 +55,8 @@ async def analisar_sentimento(data: dict):
     musicas_sugeridas = []
 
     for sentimento in sentimentos:
-        # Ajuste os termos de pesquisa em inglês aqui
-        if sentimento == "Tristeza":
-            consulta = "Sad track"
-        elif sentimento == "Nostalgia":
-            consulta = "Nostalgic track"
-        elif sentimento == "Canseirinha":
-            consulta = "Tired track"
-        elif sentimento == "Felicidade":
-            consulta = "Happy track"
-        elif sentimento == "Dançante":
-            consulta = "Dance track"
-        elif sentimento == "Melancolia":
-            consulta = "Melancholic track"
-        elif sentimento == "K-poper":
-            consulta = "K-pop track"
-        else:
-            consulta = f"{sentimento} track"  # Use o sentimento como termo de pesquisa padrão
-
-        # Defina o endpoint da API do Spotify para buscar músicas
-        search_url = 'https://api.spotify.com/v1/search'
-
         params = {
-            'q': consulta,
+            'q': f"{sentimento} track",
             'type': 'track',
             'limit': 1  # Limite de resultados
         }
@@ -86,6 +65,7 @@ async def analisar_sentimento(data: dict):
             'Authorization': f'Bearer {access_token}'
         }
 
+        search_url = 'https://api.spotify.com/v1/search'
         response = requests.get(search_url, params=params, headers=headers)
 
         if response.status_code == 200:
