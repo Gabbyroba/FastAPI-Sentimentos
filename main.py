@@ -51,18 +51,30 @@ async def definir_home():
 
 @app.post("/analisar-sentimento")
 async def analisar_sentimento(data: dict):
-    # Receba o sentimento do usuário
     sentimentos = data.get("sentimento", "").split(', ')
-
-    # Defina o endpoint da API do Spotify para buscar músicas
-    search_url = 'https://api.spotify.com/v1/search'
-    
     musicas_sugeridas = []
 
     for sentimento in sentimentos:
-        # Especifique os parâmetros da pesquisa, como o sentimento ou o gênero da música
+        # Ajuste os termos de pesquisa em inglês aqui
+        if sentimento == "Tristeza":
+            consulta = "Sad track"
+        elif sentimento == "Nostalgia":
+            consulta = "Nostalgic track"
+        elif sentimento == "Canseirinha":
+            consulta = "Tired track"
+        elif sentimento == "Felicidade":
+            consulta = "Happy track"
+        elif sentimento == "Dançante":
+            consulta = "Dance track"
+        elif sentimento == "Melancolia":
+            consulta = "Melancholic track"
+        elif sentimento == "K-poper":
+            consulta = "K-pop track"
+        else:
+            consulta = f"{sentimento} track"  # Use o sentimento como termo de pesquisa padrão
+
         params = {
-            'q': sentimento,
+            'q': consulta,
             'type': 'track',
             'limit': 1  # Limite de resultados
         }
@@ -71,16 +83,17 @@ async def analisar_sentimento(data: dict):
             'Authorization': f'Bearer {access_token}'
         }
 
-        # Faça a solicitação à API do Spotify
         response = requests.get(search_url, params=params, headers=headers)
 
         if response.status_code == 200:
             data = response.json()
-            # Extraia os detalhes da música a partir da resposta
-            # Por exemplo, data['tracks']['items'][0]['name'] contém o nome da música
             if data['tracks']['items']:
                 musica_sugerida = data['tracks']['items'][0]['name']
-                musicas_sugeridas.append(musica_sugerida)
+                musicas_sugeridas.append(f"{sentimento}: {musica_sugerida}")
+            else:
+                musicas_sugeridas.append(f"Não foi encontrada uma música para {sentimento}")
+        else:
+            musicas_sugeridas.append(f"Erro ao buscar música para {sentimento}")
 
     if musicas_sugeridas:
         return {"sentimentos": sentimentos, "musicas_sugeridas": musicas_sugeridas}
