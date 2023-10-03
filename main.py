@@ -47,7 +47,7 @@ else:
 
 @app.get("/")
 async def definir_home():
-    return('Boas vindas à API feeling you!')    
+    return('Boas vindas à API feeling you!')
 
 @app.post("/analisar-sentimento")
 async def analisar_sentimento(data: dict):
@@ -72,6 +72,9 @@ async def analisar_sentimento(data: dict):
             consulta = "K-pop track"
         else:
             consulta = f"{sentimento} track"  # Use o sentimento como termo de pesquisa padrão
+
+        # Defina o endpoint da API do Spotify para buscar músicas
+        search_url = 'https://api.spotify.com/v1/search'
 
         params = {
             'q': consulta,
@@ -99,18 +102,6 @@ async def analisar_sentimento(data: dict):
         return {"sentimentos": sentimentos, "musicas_sugeridas": musicas_sugeridas}
     else:
         return {"erro": "Não foi possível encontrar músicas para os sentimentos especificados"}
-
-    # Faça a solicitação à API do Spotify
-    response = requests.get(search_url, params=params, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        # Extraia os detalhes da música a partir da resposta
-        # Por exemplo, data['tracks']['items'][0]['name'] contém o nome da música
-        musica_sugerida = data['tracks']['items'][0]['name']
-        return {"sentimento": sentimento, "musica_sugerida": musica_sugerida}
-    else:
-        return {"erro": "Não foi possível encontrar uma música para o sentimento especificado"}
 
 if __name__ == "__main__":
     import uvicorn
