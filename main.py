@@ -50,11 +50,10 @@ else:
 # Mapeamento de sentimentos para gêneros musicais
 sentimentos_para_generos = {
     "Tristeza": "sad",
-    "Saudade": "emo",
+    "Saudade": "rainy-day",
     "Canseirinha": "chill",
     "Felicidade": "happy",
     "Dançante": "dance",
-    "Melancolia": "melancholic",
     "K-poper": "k-pop",
 }
 
@@ -86,8 +85,12 @@ async def analisar_sentimento(data: dict):
             tracks = data['tracks']['items']
             if tracks:
                 # Selecionar aleatoriamente uma música entre os resultados
-                musica_sugerida = random.choice(tracks)['name']
-                musicas_sugeridas.append(f"{sentimento}: {musica_sugerida}")
+                track = random.choice(tracks)
+                musica_sugerida = {
+                    'nome': track['name'],
+                    'url': track['external_urls']['spotify']  # URL da música
+                }
+                musicas_sugeridas.append(f"{sentimento}: {musica_sugerida['nome']}")
             else:
                 musicas_sugeridas.append(f"Não foi encontrada uma música para {sentimento}")
         else:
