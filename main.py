@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+import random
 
 app = FastAPI()
 
@@ -45,9 +46,20 @@ if response.status_code == 200:
 else:
     print('Falha ao obter o token de acesso')
 
+# Mapeamento de sentimentos para gêneros musicais
+sentimentos_para_generos = {
+    "Tristeza": "sad",
+    "Nostalgia": "nostalgic",
+    "Canseirinha": "chill",
+    "Felicidade": "happy",
+    "Dançante": "dance",
+    "Melancolia": "melancholic",
+    "K-poper": "k-pop",
+}
+
 @app.get("/")
 async def definir_home():
-    return('Boas vindas à API feeling you!')    
+    return('Boas vindas à API feeling you!')
 
 @app.post("/analisar-sentimento")
 async def analisar_sentimento(data: dict):
@@ -55,23 +67,25 @@ async def analisar_sentimento(data: dict):
     musicas_sugeridas = []
 
     for sentimento in sentimentos:
+        genero = sentimentos_para_generos.get(sentimento, "pop")  # Use "pop" como gênero padrão se não estiver mapeado
         params = {
-            'q': f"{sentimento} track",
+            'q': f"genre:{genero}",
             'type': 'track',
-            'limit': 1  # Limite de resultados
+            'limit': 50  # Aumente o limite para obter mais resultados
         }
 
         headers = {
             'Authorization': f'Bearer {access_token}'
         }
 
-        search_url = 'https://api.spotify.com/v1/search'
         response = requests.get(search_url, params=params, headers=headers)
 
         if response.status_code == 200:
             data = response.json()
-            if data['tracks']['items']:
-                musica_sugerida = data['tracks']['items'][0]['name']
+            tracks = data['tracks']['items']
+            if tracks:
+                # Selecionar aleatoriamente uma música entre os resultados
+                musica_sugerida = random.choice(tracks)['name']
                 musicas_sugeridas.append(f"{sentimento}: {musica_sugerida}")
             else:
                 musicas_sugeridas.append(f"Não foi encontrada uma música para {sentimento}")
