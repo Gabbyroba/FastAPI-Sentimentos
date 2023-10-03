@@ -27,6 +27,7 @@ client_secret = '72ee752dee1146e4b1c6ac80cc1947c2'
 
 # Autenticação para obter um token de acesso
 token_url = 'https://accounts.spotify.com/api/token'
+search_url = 'https://api.spotify.com/v1/search'
 
 data = {
     'grant_type': 'client_credentials',
