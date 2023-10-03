@@ -50,7 +50,7 @@ else:
 # Mapeamento de sentimentos para gêneros musicais
 sentimentos_para_generos = {
     "Tristeza": "sad",
-    "Nostalgia": "nostalgic",
+    "Saudade": "emo",
     "Canseirinha": "chill",
     "Felicidade": "happy",
     "Dançante": "dance",
